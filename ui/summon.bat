@@ -1,1 +1,1 @@
-D:\Program\miniconda3\envs\video-project\python.exe -m PyQt5.uic.pyuic ./ui_mosaic.ui -o ui_mosaic.py
+D:\Program\miniconda3\envs\video-project\python.exe -m PyQt5.uic.pyuic ./ui_watermark.ui -o ui_watermark.py
