@@ -1,20 +1,17 @@
 # coding:utf-8
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QWidget, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QWidget
 
 from ui.ui_mosaic import Ui_mosaic
 from FaceDetection.API import *
-import sys
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import cv2
-import numpy as np
 
 from PyQt5.QtMultimedia import *
 
-from qfluentwidgets import CommandBar, Action, FluentIcon, SplitFluentWindow, FluentTranslator
+from qfluentwidgets import Action, FluentIcon
 
 video_width = 960
 video_height = 540
