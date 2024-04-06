@@ -14,6 +14,7 @@ import cv2
 from qfluentwidgets import Action, FluentIcon
 from qfluentwidgets.multimedia import VideoWidget
 
+from invisible_video_watermark import ivw
 video_width = 960
 video_height = 540
 
@@ -26,6 +27,10 @@ class watermark(Ui_watermark, QWidget):
         self.work_button.setIcon(FluentIcon.CUT)
         self.work_button.setToolTip('添加水印')
         self.work_button.clicked.connect(self.__add_watermark)
+        self.detect_button.setIcon(FluentIcon.CUT)
+        self.detect_button.setToolTip('检测水印')
+        self.detect_button.clicked.connect(self.__detect_watermark)
+
         self.play_button.setIcon(FluentIcon.PLAY)
         self.play_button.setToolTip('播放')
         self.play_button.clicked.connect(self.__play_video)
@@ -149,4 +154,83 @@ class watermark(Ui_watermark, QWidget):
             self.__show_img(self.opencv_cap.read()[1])
 
     def __add_watermark(self):
-        pass
+        def submit_parameters(self, param1, param2, param3, param4, dialog):
+            # Call the ivw.process() function with the parameters
+            wm_len,watermark = ivw.process(param1, self.opencv_cap, param2, param3, param4)
+            # Close the dialog
+            print(wm_len,watermark)
+            dialog.close()
+        
+        # Create a new dialog to get parameters from users
+        dialog = QtWidgets.QDialog()
+        dialog.setWindowTitle("Watermark Parameters")
+        dialog.setModal(True)
+
+        # Create input fields and labels
+        label1 = QtWidgets.QLabel("watermark str :")
+        input1 = QtWidgets.QLineEdit()
+        label2 = QtWidgets.QLabel("output file name:")
+        input2 = QtWidgets.QLineEdit()
+        label3 = QtWidgets.QLabel("sampletimes:")
+        input3 = QtWidgets.QLineEdit()
+        label4 = QtWidgets.QLabel("peroid:")
+        input4 = QtWidgets.QLineEdit()
+
+        # Create a button to submit the parameters
+        submit_button = QtWidgets.QPushButton("Submit")
+        submit_button.clicked.connect(lambda:submit_parameters(self,input1.text(), input2.text(),int(input3.text()), int(input4.text()), dialog))
+
+        # Create a layout for the dialog
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(label1)
+        layout.addWidget(input1)
+        layout.addWidget(label2)
+        layout.addWidget(input2)
+        layout.addWidget(label3)
+        layout.addWidget(input3)
+        layout.addWidget(label4)
+        layout.addWidget(input4)
+        layout.addWidget(submit_button)
+
+        # Set the layout for the dialog
+        dialog.setLayout(layout)
+
+        # Show the dialog
+        dialog.exec_()
+
+    def __detect_watermark(self):
+        def submit_parameters(self, param1, param2, dialog):
+            # Call the ivw.process() function with the parameters
+            result  = ivw.recover(self.opencv_cap,param1, param2)
+            # Close the dialog
+            print(result)
+            dialog.close()
+        
+        # Create a new dialog to get parameters from users
+        detect_dialog = QtWidgets.QDialog()
+        detect_dialog.setWindowTitle("Watermark Parameters")
+        detect_dialog.setModal(True)
+
+        # Create input fields and labels
+        detect_dialog_label1 = QtWidgets.QLabel("wm_len :")
+        detect_dialog_input1 = QtWidgets.QLineEdit()
+        detect_dialog_label2 = QtWidgets.QLabel("watermark :")
+        detect_dialog_input2 = QtWidgets.QLineEdit()
+
+        # Create a button to submit the parameters
+        submit_button = QtWidgets.QPushButton("Submit")
+        submit_button.clicked.connect(lambda:submit_parameters(self,detect_dialog_input1.text(), detect_dialog_input2.text(), detect_dialog))
+
+        # Create a layout for the dialog
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(detect_dialog_label1)
+        layout.addWidget(detect_dialog_input1)
+        layout.addWidget(detect_dialog_label2)
+        layout.addWidget(detect_dialog_input2)
+        layout.addWidget(submit_button)
+
+        # Set the layout for the dialog
+        detect_dialog.setLayout(layout)
+
+        # Show the dialog
+        detect_dialog.exec_()
