@@ -34,7 +34,7 @@ def output(origin,video,fps,sen,kbps=10000,maxkbps=15000,mtype=".jpg",vtype=".mp
     :param video: 导出视频名
     :param fps: 帧率
     :param kbps: 目标码率
-    :param maxkbps: 最大码率
+    :param maxkbps: 最大码率invisible_video_watermark/origin/test.mp4
     :param sen: 分辨率 例如1920x1080
     :param mtype: 输入图片类型
     :param vtype: 视频类型
