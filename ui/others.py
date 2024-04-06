@@ -1,7 +1,4 @@
 from PyQt5.QtWidgets import QWidget
-
-from ui.ui_others import Ui_others
-
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
@@ -9,6 +6,9 @@ from PyQt5.QtGui import *
 import cv2
 
 from qfluentwidgets import Action, FluentIcon
+
+from ui.ui_others import Ui_others
+from SRT.srt import load_model, srt_create
 
 video_width = 960
 video_height = 540
@@ -144,4 +144,6 @@ class others(Ui_others, QWidget):
             self.__show_img(self.opencv_cap.read()[1])
 
     def __add_subtitle(self):
-        pass
+        model = load_model('small')
+        srt_create(input=self.file_name, language='Chinese', output=self.file_name+".srt", model=model)
+        

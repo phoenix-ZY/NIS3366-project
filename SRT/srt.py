@@ -1,9 +1,7 @@
 import whisper
 import os
-import datetime,time
-from zhconv import convert
 import imageio
-import torch
+from zhconv import convert
 
 def load_video(file_path:str):
     """
@@ -60,7 +58,6 @@ def srt_create(input:str,language:str,output:str,model:whisper.model):
     """
     video=load_video(input)
 
-
     duration=seconds_to_hmsm(video.get_meta_data()['duration'])
     res=model.transcribe(input,fp16=False,language=language)
     with open(output,'w',encoding='utf-8') as f:
@@ -69,9 +66,9 @@ def srt_create(input:str,language:str,output:str,model:whisper.model):
             f.write(str(i)+'\n')
             f.write(seconds_to_hmsm(float(r['start']))+' --> '+seconds_to_hmsm(float(r['end']))+'\n')
             i += 1
-            f.write(r['text']) # 结果可能是繁体，转为简体zh-cn
+            f.write(convert(r['text'], 'zh-cn')) # 结果可能是繁体，转为简体zh-cn
             f.write('\n')
 
 if __name__=="__main__":
-    model=load_model('large')
+    model=load_model('small')
     srt_create(input=r'./1.mp4',language='Chinese',output=r'./1.srt',model=model)

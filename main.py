@@ -41,8 +41,6 @@ if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     app = QApplication(sys.argv)
-    print(123)
     window = MainWindow()
-    print(456)
     window.show()
     sys.exit(app.exec_())
