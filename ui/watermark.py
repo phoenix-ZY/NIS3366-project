@@ -27,9 +27,6 @@ class watermark(Ui_watermark, QWidget):
         self.work_button.setIcon(FluentIcon.CUT)
         self.work_button.setToolTip('添加水印')
         self.work_button.clicked.connect(self.__add_watermark)
-        self.detect_button.setIcon(FluentIcon.CUT)
-        self.detect_button.setToolTip('检测水印')
-        self.detect_button.clicked.connect(self.__detect_watermark)
 
         self.play_button.setIcon(FluentIcon.PLAY)
         self.play_button.setToolTip('播放')
@@ -54,9 +51,7 @@ class watermark(Ui_watermark, QWidget):
         self.slider_pressed = False
         self.all_frame_nums = None
         self.opencv_cap = None
-        self.start_frame = None
         self.fps = None
-        self.end_frame = None
         self.workable = False
         self.file_name = None
         self.frame_index = None
@@ -71,8 +66,6 @@ class watermark(Ui_watermark, QWidget):
             return
 
         self.file_name = filename
-        self.start_frame = None
-        self.end_frame = None
 
         # 使用opencv打开文件，获取总帧数
         self.opencv_cap = cv2.VideoCapture(filename)

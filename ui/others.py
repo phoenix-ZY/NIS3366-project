@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 import cv2
 
 from qfluentwidgets import Action, FluentIcon
+import os
 
 from ui.ui_others import Ui_others
 from SRT.srt import load_model, srt_create
@@ -24,9 +25,11 @@ class others(Ui_others, QWidget):
         self.play_button.setIcon(FluentIcon.PLAY)
         self.play_button.setToolTip('播放')
         self.play_button.clicked.connect(self.__play_video)
+        self.start_frame_button.clicked.connect(self.__get_start_frame)
+        self.end_frame_button.clicked.connect(self.__get_end_frame)
 
         # 菜单栏初始化
-        self.commandbar.addAction(Action(FluentIcon.DOCUMENT, '打开文件', triggered=self.__open_file))
+        self.commandbar.addActions([Action(FluentIcon.DOCUMENT, '打开文件', triggered=self.__open_file), Action(FluentIcon.SAVE, '保存片段', triggered=self.__save_file)])
 
         # 视频播放器初始化
         self.video.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -49,6 +52,7 @@ class others(Ui_others, QWidget):
         self.end_frame = None
         self.workable = False
         self.file_name = None
+        self.save_filename = None
         self.frame_index = None
         self.timer = QtCore.QTimer(self)
 
@@ -86,6 +90,7 @@ class others(Ui_others, QWidget):
         img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
         return img
 
+    # 显示一张图片
     def __show_img(self, img):
         if img is None:
             return
@@ -142,8 +147,43 @@ class others(Ui_others, QWidget):
             self.frame_index = int(v * self.all_frame_nums / 1000)
             self.opencv_cap.set(cv2.CAP_PROP_POS_FRAMES, self.frame_index)
             self.__show_img(self.opencv_cap.read()[1])
-
+    
+    # 添加字幕
     def __add_subtitle(self):
         model = load_model('small')
         srt_create(input=self.file_name, language='Chinese', output=self.file_name+".srt", model=model)
+
+    def __save_file(self):
+        if not self.workable:
+            return
         
+        self.save_filename = QFileDialog.getSaveFileName(self, "保存文件", "", "视频文件(*.mp4 *.avi *.flv *.mkv *.mov *.wmv)")
+        if self.save_filename[0] == '':
+            return
+        # 删除save_filename文件
+        os.system(f'del {self.save_filename[0]}')
+        # 获取视频总时长
+        duration = self.opencv_cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.opencv_cap.get(cv2.CAP_PROP_FPS)
+        # 获取start_frame和end_frame对应的时间点
+        start_time = self.start_frame / self.all_frame_nums * duration
+        end_time = self.end_frame / self.all_frame_nums * duration
+        # 使用ffmpeg进行剪辑
+        command = f'ffmpeg -i {self.file_name} -ss {start_time} -to {end_time} -c copy {self.save_filename[0]}'
+        os.system(command)
+    
+
+    # 获取起始帧
+    def __get_start_frame(self):
+        if self.workable:
+            self.start_frame = self.frame_index - 1
+            if self.start_frame and self.end_frame and self.start_frame > self.end_frame:
+                self.start_frame, self.end_frame = self.end_frame, self.start_frame
+            # print(self.start_frame, self.end_frame)
+
+    # 获取结束帧
+    def __get_end_frame(self):
+        if self.workable:
+            self.end_frame = self.frame_index - 1
+            if self.start_frame and self.end_frame and self.start_frame > self.end_frame:
+                self.start_frame, self.end_frame = self.end_frame, self.start_frame
+            # print(self.start_frame, self.end_frame)

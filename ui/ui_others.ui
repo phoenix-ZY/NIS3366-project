@@ -69,7 +69,7 @@
     <string>添加字幕</string>
    </property>
   </widget>
-  <widget class="PushButton" name="button2">
+  <widget class="PushButton" name="start_frame_button">
    <property name="geometry">
     <rect>
      <x>370</x>
@@ -79,10 +79,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>阿巴阿巴</string>
+    <string>获取起始帧</string>
    </property>
   </widget>
-  <widget class="PushButton" name="button3">
+  <widget class="PushButton" name="end_frame_button">
    <property name="geometry">
     <rect>
      <x>490</x>
@@ -92,7 +92,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>啊啊啊啊</string>
+    <string>获取终止帧</string>
    </property>
   </widget>
  </widget>

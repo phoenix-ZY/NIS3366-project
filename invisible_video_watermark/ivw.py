@@ -1,7 +1,3 @@
-"""
-铃兰小姐是我们的光！
-请保佑代码永远不出bug吧！
-"""
 # from PySide6.QtCore import Qt,QTime,QTimer,QThread,Signal
 import os
 import random

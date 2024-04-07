@@ -31,12 +31,12 @@ class Ui_others(object):
         self.add_subtitle = PushButton(others)
         self.add_subtitle.setGeometry(QtCore.QRect(260, 660, 102, 32))
         self.add_subtitle.setObjectName("add_subtitle")
-        self.button2 = PushButton(others)
-        self.button2.setGeometry(QtCore.QRect(370, 660, 102, 32))
-        self.button2.setObjectName("button2")
-        self.button3 = PushButton(others)
-        self.button3.setGeometry(QtCore.QRect(490, 660, 102, 32))
-        self.button3.setObjectName("button3")
+        self.start_frame_button = PushButton(others)
+        self.start_frame_button.setGeometry(QtCore.QRect(370, 660, 102, 32))
+        self.start_frame_button.setObjectName("start_frame_button")
+        self.end_frame_button = PushButton(others)
+        self.end_frame_button.setGeometry(QtCore.QRect(490, 660, 102, 32))
+        self.end_frame_button.setObjectName("end_frame_button")
 
         self.retranslateUi(others)
         QtCore.QMetaObject.connectSlotsByName(others)
@@ -45,6 +45,6 @@ class Ui_others(object):
         _translate = QtCore.QCoreApplication.translate
         others.setWindowTitle(_translate("others", "Form"))
         self.add_subtitle.setText(_translate("others", "添加字幕"))
-        self.button2.setText(_translate("others", "阿巴阿巴"))
-        self.button3.setText(_translate("others", "啊啊啊啊"))
+        self.start_frame_button.setText(_translate("others", "获取起始帧"))
+        self.end_frame_button.setText(_translate("others", "获取终止帧"))
 from qfluentwidgets import CommandBar, PushButton, Slider, ToolButton
