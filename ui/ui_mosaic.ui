@@ -39,16 +39,6 @@
     </rect>
    </property>
   </widget>
-  <widget class="ToolButton" name="cut_button">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>710</y>
-     <width>38</width>
-     <height>32</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="CommandBar" name="commandbar">
    <property name="geometry">
     <rect>
