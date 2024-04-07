@@ -39,8 +39,6 @@ class mosaic(Ui_mosaic, QWidget):
         # 按钮初始化
         self.play_button.setIcon(FluentIcon.PLAY)
         self.play_button.setToolTip('播放')
-        self.cut_button.setToolTip('获取起始帧')
-        self.cut_button.setIcon(FluentIcon.CUT)
         self.last_frame.setToolTip('上一帧')
         self.last_frame.setIcon(FluentIcon.CARE_LEFT_SOLID)
         self.next_frame.setToolTip('下一帧')
@@ -51,14 +49,13 @@ class mosaic(Ui_mosaic, QWidget):
         self.detect_face.setIcon(FluentIcon.CAMERA)
 
         self.play_button.clicked.connect(self.__play_video)
-        self.cut_button.clicked.connect(self.__get_start_frame)
         self.last_frame.clicked.connect(self.__set_last_frame)
         self.next_frame.clicked.connect(self.__set_next_frame)
         self.choose_face.clicked.connect(self.check_status)
         self.detect_face.clicked.connect(self.face_detect)
 
         # 菜单栏初始化
-        self.commandbar.addActions([Action(FluentIcon.DOCUMENT, '打开文件', triggered=self.__open_file), Action(FluentIcon.SAVE, '保存', triggered=self.__save_file)])
+        self.commandbar.addAction(Action(FluentIcon.DOCUMENT, '打开文件', triggered=self.__open_file))
 
         # 播放窗口设置
         self.video.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -76,33 +73,12 @@ class mosaic(Ui_mosaic, QWidget):
         self.slider_pressed = False
         self.all_frame_nums = None
         self.opencv_cap = None
-        self.start_frame = None
         self.fps = None
-        self.end_frame = None
         self.workable = False
         self.file_name = None
         self.frame_index = None
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.__next_frame)
-
-    # 获取起始帧
-    def __get_start_frame(self):
-        self.start_frame = None
-        self.end_frame = None
-        if self.workable:
-            self.start_frame = self.frame_index - 1
-            self.cut_button.setToolTip('获取结束帧')
-            self.cut_button.disconnect()
-            self.cut_button.clicked.connect(self.__get_end_frame)
-
-    # 获取结束帧
-    def __get_end_frame(self):
-        if self.workable:
-            self.end_frame = self.frame_index - 1
-            self.cut_button.setToolTip('获取起始帧')
-            self.cut_button.disconnect()
-            self.cut_button.clicked.connect(self.__get_start_frame)
-            self.start_frame, self.end_frame = self.end_frame, self.start_frame if self.start_frame > self.end_frame else (self.start_frame, self.end_frame)
 
     def __img_resize(self, img):
         height, width = img.shape[0], img.shape[1]
@@ -123,8 +99,6 @@ class mosaic(Ui_mosaic, QWidget):
             return
 
         self.file_name = filename
-        self.start_frame = None
-        self.end_frame = None
 
         # 使用opencv打开文件，获取总帧数
         self.opencv_cap = cv2.VideoCapture(filename)
@@ -196,9 +170,6 @@ class mosaic(Ui_mosaic, QWidget):
             return
         self.__show_img(self.opencv_cap.read()[1])
         self.__change_slide(self.frame_index)
-
-    def __save_file(self):
-        pass
 
     # 滑动条跟随视频播放更改
     def __change_slide(self, v):
