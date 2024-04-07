@@ -1,6 +1,5 @@
 """
-铃兰小姐是我们的光！
-请保佑代码永远不出bug吧！
+舒飞翔是我们的光！
 """
 # from PySide6.QtCore import Qt,QTime,QTimer,QThread,Signal
 import os
@@ -26,10 +25,6 @@ def initial():
     准备相应文件夹与工作环境
     :return:
     """
-    if os.path.exists("result"):
-        pass
-    else:
-        os.mkdir("result")
 
     if os.path.exists("origin"):
         pass
@@ -69,11 +64,6 @@ def process(watermark,
     seed.append(watermarkquality)
     # 生成随机种子用于水印合成
     initial() #初始化
-    if os.path.exists("result/"+str(filename)):
-        shutil.rmtree("result/"+str(filename))#防止项目同名
-        os.mkdir("result/"+str(filename))
-    else :
-        os.mkdir("result/"+str(filename))
 
     video = videoc
     frame_count = int(videoc.get(cv2.CAP_PROP_FRAME_COUNT))

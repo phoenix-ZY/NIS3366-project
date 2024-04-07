@@ -5,7 +5,7 @@ import cv2
 from subprocess import check_output
 import os
 
-def __external_cmd(cmd, code="utf8"): #执行命令行的一个函数，用的谁的轮子记不清了（
+def __external_cmd(cmd, code="utf8"): 
     print(cmd)
     process = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT)

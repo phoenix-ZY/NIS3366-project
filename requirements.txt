@@ -112,3 +112,6 @@ zope.event==5.0
 zope.interface==6.0
 zstandard==0.21.0
 zxing==1.0
+openai-whisper
+zhconv==1.4.3
+pymongo==4.0.1
