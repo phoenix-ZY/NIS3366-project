@@ -24,7 +24,7 @@ video_height = 540
 
 class remove_watermark(Ui_remove, QWidget):
     def __init__(self, parent=None):
-        
+
         super().__init__(parent=parent)
         self.setupUi(self)
 
@@ -34,6 +34,9 @@ class remove_watermark(Ui_remove, QWidget):
         self.play_button.setIcon(FluentIcon.PLAY)
         self.play_button.setToolTip('播放')
         self.play_button.clicked.connect(self.__play_video)
+        self.addwater_button.setIcon(FluentIcon.PALETTE)
+        self.addwater_button.setToolTip('添加水印')
+        self.addwater_button.clicked.connect(self.__adda_watermark)
 
         # 菜单栏初始化
         self.commandbar.addAction(Action(FluentIcon.DOCUMENT, '打开文件', triggered=self.__open_file))
@@ -83,7 +86,7 @@ class remove_watermark(Ui_remove, QWidget):
         # 显示第一帧图片
         self.__show_img(self.opencv_cap.read()[1])
         self.workable = True
-    
+
     def __img_resize(self, img):
         height, width = img.shape[0], img.shape[1]
         ratio = min(video_width / width, video_height / height)
@@ -116,7 +119,7 @@ class remove_watermark(Ui_remove, QWidget):
                 self.play_button.setIcon(FluentIcon.PAUSE)
                 self.play_button.setToolTip('暂停')
                 self.timer.start(self.fps)
-    
+
     # 结束时按钮变为播放
     def __video_stop(self):
         self.play_button.setIcon(FluentIcon.PLAY)
@@ -257,3 +260,120 @@ class remove_watermark(Ui_remove, QWidget):
             print(f"成功处理视频文件: {video_name}")
         else:
             print("无效的视频文件")
+
+
+    def __adda_watermark(self):
+        def ensure_directory_exists(directory):
+            if not os.path.exists(directory):
+                try:
+                    os.makedirs(directory)
+                    print(f"Created directory: {directory}")
+                except OSError as error:
+                    print(f"Error creating directory {directory}: {error}")
+                    raise
+
+
+        def is_valid_video_file(file):
+            try:
+                with VideoFileClip(file) as video_clip:
+                    return True
+            except Exception as e:
+                print(f"Invalid video file: {file}, Error: {e}")
+                return False
+
+
+        def get_first_valid_frame(video_clip, threshold=10, num_frames=10):
+            total_frames = int(video_clip.fps * video_clip.duration)
+            frame_indices = [int(i * total_frames / num_frames) for i in range(num_frames)]
+
+            for idx in frame_indices:
+                frame = video_clip.get_frame(idx / video_clip.fps)
+                if frame.mean() > threshold:
+                    return frame
+
+            return video_clip.get_frame(0)
+
+
+        def select_watermark_position(video_clip):
+            frame = get_first_valid_frame(video_clip)
+
+            # 将视频帧调整为720p显示
+            display_height = 720
+            scale_factor = display_height / frame.shape[0]
+            display_width = int(frame.shape[1] * scale_factor)
+            display_frame = cv2.resize(frame, (display_width, display_height))
+            display_frame = cv2.cvtColor(display_frame, cv2.COLOR_BGR2RGB)
+
+            instructions = ""
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            cv2.putText(
+                display_frame, instructions, (10, 30), font, 1, (255, 255, 255), 2, cv2.LINE_AA
+            )
+
+            r = cv2.selectROI(display_frame)
+            cv2.destroyAllWindows()
+
+            position = (int(r[0] / scale_factor), int(r[1] / scale_factor))
+
+            return position
+
+
+        def add_watermark(video_clip, watermark_path, watermark_position):
+            watermark = cv2.imread(watermark_path, cv2.IMREAD_UNCHANGED)
+            watermark_height, watermark_width, _ = watermark.shape
+
+            def add_watermark_to_frame(frame):
+                frame_height, frame_width, _ = frame.shape
+                x, y = watermark_position
+
+                # 创建一个与视频帧大小相同的全黑图像
+                watermarked_frame = np.zeros_like(frame)
+
+                # 将视频帧复制到新图像
+                watermarked_frame[:] = frame
+
+                # # 检查水印是否超出视频帧边界
+                # if x + watermark_width > frame_width:
+                #     watermark = watermark[:, :frame_width - x]
+                # if y + watermark_height > frame_height:
+                #     watermark = watermark[:frame_height - y, :]
+
+                # 将水印图片直接叠加到指定位置
+                watermarked_frame[y : y + watermark.shape[0], x : x + watermark.shape[1]] = (
+                    cv2.addWeighted(
+                        watermarked_frame[
+                            y : y + watermark.shape[0], x : x + watermark.shape[1]
+                        ],
+                        1,
+                        watermark,
+                        1,
+                        0,
+                    )
+                )
+
+                return watermarked_frame
+
+            return video_clip.fl_image(add_watermark_to_frame)
+
+
+        def process_video(video_clip, output_path, watermark_path, watermark_position):
+            watermarked_clip = add_watermark(video_clip, watermark_path, watermark_position)
+            watermarked_clip.write_videofile(f"{output_path}.mp4", codec="libx264")
+
+
+        input_video = self.file_name
+        watermark_path = "logo.jpg"
+        output_dir = "output"
+
+        ensure_directory_exists(output_dir)
+
+        if is_valid_video_file(input_video):
+            video_clip = VideoFileClip(input_video)
+            watermark_position = select_watermark_position(video_clip)
+
+            video_name = os.path.basename(input_video)
+            output_video_path = os.path.join(output_dir, os.path.splitext(video_name)[0])
+            process_video(video_clip, output_video_path, watermark_path, watermark_position)
+            print(f"Successfully processed {video_name}")
+        else:
+            print("Invalid video file")
