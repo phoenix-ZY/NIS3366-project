@@ -21,6 +21,9 @@ class Ui_watermark(object):
         self.work_button = TransparentPushButton(watermark)
         self.work_button.setGeometry(QtCore.QRect(490, 610, 176, 30))
         self.work_button.setObjectName("work_button")
+        self.detect_button = TransparentPushButton(watermark)
+        self.detect_button.setGeometry(QtCore.QRect(680, 610, 176, 30))
+        self.detect_button.setObjectName("detect_button")
         self.video = QtWidgets.QGraphicsView(watermark)
         self.video.setGeometry(QtCore.QRect(10, 40, 960, 540))
         self.video.setObjectName("video")
@@ -39,4 +42,5 @@ class Ui_watermark(object):
         _translate = QtCore.QCoreApplication.translate
         watermark.setWindowTitle(_translate("watermark", "Form"))
         self.work_button.setText(_translate("watermark", "添加水印"))
+        self.detect_button.setText(_translate("watermark", "检测水印"))
 from qfluentwidgets import CommandBar, Slider, ToolButton, TransparentPushButton

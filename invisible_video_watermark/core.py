@@ -31,5 +31,8 @@ def decodewatermark_text(
     :return: 水印文字或者图片
     """
     extract = bw.WaterMark(password_img=1, password_wm=1, processes=None)
-    result = extract.extract(embed_img = input, wm_shape=int(len_wm), mode="str")
+    try: 
+        result = extract.extract(embed_img = input, wm_shape=int(len_wm), mode="str")
+    except:
+        return None
     return result

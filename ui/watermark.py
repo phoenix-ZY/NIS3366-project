@@ -20,13 +20,16 @@ video_height = 540
 
 class watermark(Ui_watermark, QWidget):
     def __init__(self, parent=None):
-        
+
         super().__init__(parent=parent)
         self.setupUi(self)
 
         self.work_button.setIcon(FluentIcon.CUT)
         self.work_button.setToolTip('添加水印')
         self.work_button.clicked.connect(self.__add_watermark)
+        self.detect_button.setIcon(FluentIcon.CUT)
+        self.detect_button.setToolTip("检测水印")
+        self.detect_button.clicked.connect(self.__detect_watermark)
 
         self.play_button.setIcon(FluentIcon.PLAY)
         self.play_button.setToolTip('播放')
@@ -76,7 +79,7 @@ class watermark(Ui_watermark, QWidget):
         # 显示第一帧图片
         self.__show_img(self.opencv_cap.read()[1])
         self.workable = True
-    
+
     def __img_resize(self, img):
         height, width = img.shape[0], img.shape[1]
         ratio = min(video_width / width, video_height / height)
@@ -109,7 +112,7 @@ class watermark(Ui_watermark, QWidget):
                 self.play_button.setIcon(FluentIcon.PAUSE)
                 self.play_button.setToolTip('暂停')
                 self.timer.start(self.fps)
-    
+
     # 结束时按钮变为播放
     def __video_stop(self):
         self.play_button.setIcon(FluentIcon.PLAY)
@@ -151,9 +154,22 @@ class watermark(Ui_watermark, QWidget):
             # Call the ivw.process() function with the parameters
             wm_len,watermark = ivw.process(param1, self.opencv_cap, param2, param3, param4)
             # Close the dialog
-            print(wm_len,watermark)
+            dialog1 = QtWidgets.QDialog()
+            dialog1.setWindowTitle("please remind these parameters")
+            dialog1.setModal(True)
+            dialog1.resize(500, 100)
+
+            layout = QtWidgets.QVBoxLayout()
+            label1 = QLabel(f"wm_len: {wm_len}")
+            label2 = QLabel(f"watermark: {watermark}")
+            layout.addWidget(label1)
+            layout.addWidget(label2)
+            dialog1.setLayout(layout)
+            dialog1.exec_()
+
+            # print(wm_len,watermark)
             dialog.close()
-        
+
         # Create a new dialog to get parameters from users
         dialog = QtWidgets.QDialog()
         dialog.setWindowTitle("Watermark Parameters")
@@ -195,10 +211,20 @@ class watermark(Ui_watermark, QWidget):
         def submit_parameters(self, param1, param2, dialog):
             # Call the ivw.process() function with the parameters
             result  = ivw.recover(self.opencv_cap,param1, param2)
+
+            dialog1 = QtWidgets.QDialog()
+            dialog1.setWindowTitle("Result")
+            dialog1.setModal(True)
+            dialog1.resize(500, 100)
+
+            label1 = QtWidgets.QLabel(f"detect result: {result}")
+            layout = QtWidgets.QVBoxLayout()
+            layout.addWidget(label1)
+            dialog1.setLayout(layout)
+            dialog1.exec_()
             # Close the dialog
-            print(result)
             dialog.close()
-        
+
         # Create a new dialog to get parameters from users
         detect_dialog = QtWidgets.QDialog()
         detect_dialog.setWindowTitle("Watermark Parameters")

@@ -3,3 +3,4 @@
 fluent/
 *.pyc
 .vscode/
+output/
