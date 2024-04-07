@@ -23,6 +23,7 @@ class Ui_others(object):
         self.video.setObjectName("video")
         self.video_slider = Slider(others)
         self.video_slider.setGeometry(QtCore.QRect(10, 580, 961, 21))
+        self.video_slider.setMaximum(1000)
         self.video_slider.setOrientation(QtCore.Qt.Horizontal)
         self.video_slider.setObjectName("video_slider")
         self.play_button = ToolButton(others)
