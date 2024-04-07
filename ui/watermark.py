@@ -160,9 +160,10 @@ class watermark(Ui_watermark, QWidget):
             dialog1.resize(500, 100)
 
             layout = QtWidgets.QVBoxLayout()
-            label1 = QLabel(f"your video is created in invidible_video_watermark/origin/ folder")
+            label3 = QLabel(f"your video is created in invidible_video_watermark/origin/ folder")
             label1 = QLabel(f"wm_len: {wm_len}")
             label2 = QLabel(f"watermark: {watermark}")
+            layout.addWidget(label3)
             layout.addWidget(label1)
             layout.addWidget(label2)
             dialog1.setLayout(layout)
