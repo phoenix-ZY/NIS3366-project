@@ -210,7 +210,8 @@ class watermark(Ui_watermark, QWidget):
     def __detect_watermark(self):
         def submit_parameters(self, param1, dialog):
             # Call the ivw.process() function with the parameters
-            wm_len, watermark = get_data(param1)
+            d = get_data(int(param1))
+            wm_len, watermark = d['wm_len'], d['watermark']
             result  = ivw.recover(self.opencv_cap, wm_len, watermark)
 
             dialog1 = QtWidgets.QDialog()
