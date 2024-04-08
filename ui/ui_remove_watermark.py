@@ -21,6 +21,9 @@ class Ui_remove(object):
         self.work_button = TransparentPushButton(remove)
         self.work_button.setGeometry(QtCore.QRect(340, 660, 176, 30))
         self.work_button.setObjectName("work_button")
+        self.addwater_button = TransparentPushButton(remove)
+        self.addwater_button.setGeometry(QtCore.QRect(530, 660, 176, 30))
+        self.addwater_button.setObjectName("addwater_button")
         self.video = QtWidgets.QGraphicsView(remove)
         self.video.setGeometry(QtCore.QRect(10, 40, 960, 540))
         self.video.setObjectName("video")
@@ -40,4 +43,5 @@ class Ui_remove(object):
         _translate = QtCore.QCoreApplication.translate
         remove.setWindowTitle(_translate("remove", "Form"))
         self.work_button.setText(_translate("remove", "去除水印"))
+        self.addwater_button.setText(_translate("remove", "添加水印"))
 from qfluentwidgets import CommandBar, Slider, ToolButton, TransparentPushButton

@@ -1,20 +1,17 @@
-from PyQt5.QtWidgets import QWidget, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QWidget
 
 from ui.ui_watermark import Ui_watermark
 
-import sys
-from pathlib import Path
 from PyQt5.QtCore import Qt
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import QUrl
 import cv2
 
 from qfluentwidgets import Action, FluentIcon
-from qfluentwidgets.multimedia import VideoWidget
-
 from invisible_video_watermark import ivw
+from db.db import insert_data, get_data
+
 video_width = 960
 video_height = 540
 
@@ -27,7 +24,7 @@ class watermark(Ui_watermark, QWidget):
         self.work_button.setIcon(FluentIcon.CUT)
         self.work_button.setToolTip('添加水印')
         self.work_button.clicked.connect(self.__add_watermark)
-        self.detect_button.setIcon(FluentIcon.CUT)
+        self.detect_button.setIcon(FluentIcon.VPN)
         self.detect_button.setToolTip("检测水印")
         self.detect_button.clicked.connect(self.__detect_watermark)
 
@@ -153,19 +150,20 @@ class watermark(Ui_watermark, QWidget):
         def submit_parameters(self, param1, param2, param3, param4, dialog):
             # Call the ivw.process() function with the parameters
             wm_len,watermark = ivw.process(param1, self.opencv_cap, param2, param3, param4)
+            # TODO: 上传到数据库
+            id = insert_data(wm_len, watermark)
+
             # Close the dialog
             dialog1 = QtWidgets.QDialog()
-            dialog1.setWindowTitle("please remind these parameters")
+            dialog1.setWindowTitle("please remind the id")
             dialog1.setModal(True)
             dialog1.resize(500, 100)
 
             layout = QtWidgets.QVBoxLayout()
             label3 = QLabel(f"your video is created in invidible_video_watermark/origin/ folder")
-            label1 = QLabel(f"wm_len: {wm_len}")
-            label2 = QLabel(f"watermark: {watermark}")
+            label1 = QLabel(f"id: {id}")
             layout.addWidget(label3)
             layout.addWidget(label1)
-            layout.addWidget(label2)
             dialog1.setLayout(layout)
             dialog1.exec_()
 
@@ -210,9 +208,11 @@ class watermark(Ui_watermark, QWidget):
         dialog.exec_()
 
     def __detect_watermark(self):
-        def submit_parameters(self, param1, param2, dialog):
+        def submit_parameters(self, param1, dialog):
             # Call the ivw.process() function with the parameters
-            result  = ivw.recover(self.opencv_cap,param1, param2)
+            d = get_data(int(param1))
+            wm_len, watermark = d['wm_len'], d['watermark']
+            result  = ivw.recover(self.opencv_cap, wm_len, watermark)
 
             dialog1 = QtWidgets.QDialog()
             dialog1.setWindowTitle("Result")
@@ -233,25 +233,22 @@ class watermark(Ui_watermark, QWidget):
         detect_dialog.setModal(True)
 
         # Create input fields and labels
-        detect_dialog_label1 = QtWidgets.QLabel("wm_len :")
+        detect_dialog_label1 = QtWidgets.QLabel("ID :")
         detect_dialog_input1 = QtWidgets.QLineEdit()
-        detect_dialog_label2 = QtWidgets.QLabel("watermark :")
-        detect_dialog_input2 = QtWidgets.QLineEdit()
 
         # Create a button to submit the parameters
         submit_button = QtWidgets.QPushButton("Submit")
-        submit_button.clicked.connect(lambda:submit_parameters(self,detect_dialog_input1.text(), detect_dialog_input2.text(), detect_dialog))
+        submit_button.clicked.connect(lambda:submit_parameters(self,detect_dialog_input1.text(), detect_dialog))
 
         # Create a layout for the dialog
+        # TODO: 改为输入index
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(detect_dialog_label1)
         layout.addWidget(detect_dialog_input1)
-        layout.addWidget(detect_dialog_label2)
-        layout.addWidget(detect_dialog_input2)
         layout.addWidget(submit_button)
 
         # Set the layout for the dialog
         detect_dialog.setLayout(layout)
 
         # Show the dialog
-        detect_dialog.exec_()
+        detect_dialog.exec_()#
