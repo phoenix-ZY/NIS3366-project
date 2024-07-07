@@ -30,7 +30,7 @@ auto-py-to-exe==2.37.0
 blind-watermark==0.4.4
 bottle==0.12.25
 bottle-websocket==0.2.9
-certifi==2023.7.22
+certifi==2024.07.04
 cffi==1.15.1
 charset-normalizer==3.2.0
 contourpy==1.1.0
